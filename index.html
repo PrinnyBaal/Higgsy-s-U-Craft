@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pathfinder Wondrous Item Creator</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="Styling/itemCrafter.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <script src="src/ctrl/initialize.js"></script>
+  <script src="src/model/sheetStats.js"></script>
+  <script src="src/view/sheetLogic.js"></script>
+
+  <script>
+   window.addEventListener( "load", sheetProj.view.sheetLogic.setupUserInterface);
+  </script>
+</head>
+
+<style>
+
+
+</style>
+<body>
+  <!-- Step 1 (choose effect):
+    Ability Bonus (enhancement)
+    Armor Bonus (enhancement)
+    Bonus Spell
+    AC Bonus  (deflection/other)
+    Natural Armor Bonus (enhancement)
+    Save Bonuses (resistance/other)
+    Skill bonuses (competence)
+    Spell Resistance (minimum 13)
+    Weapon Bonus (enhancement)
+    Spell Effect (Single use+spellcomplete/single use +use-activated/ 50 charges+spell trigger/ command word/ use-activated or continuous)(isPotion/isScroll/isWand/isStaff)(material component cost) -->
+
+    <!-- Step 2 (more details):
+      Effect specific questions
+      general questions:  Charged[50]/ Charges per day
+      isAddOn y/n
+    Step 3 (Final questions):
+      Item slot: (armor/shield/weapon/all standard slots/slotless/potion/staff/wand/scroll)
+      Armor/Shield/weapon: cost of masterwork item
+      Final Adjustment: custom input
+      Requirements: textInput
+      Description: paragraphInput -->
+
+
+
+
+      <!--
+          Step 4: Create item button
+            Text version that plops all info into proper slots
+            Image version that stylishly displays item in a nice frame with the description and stats beneath
+              Input beneath image version allow changes to name font-size and font style(maybe)
+              Input beneath image version allow changes to description font-size and font style(maybe)
+              Input beneath image version allow changes to itemType font-size and font style(maybe)
+              Input beneath image version allows user to plop in an image of their own
+              https://www.reddit.com/r/DnD/comments/7c9hge/oc_really_proud_of_my_item_cards_bonus_template/
+
+          Step ???:
+            Randomly generated effects -->
+  <div class="container-fluid" id="shopBanner">
+    <div class="row h-75" >
+      <div class="col-1 offset-1" id="bannerImage">
+
+      </div>
+      <div class="col my-auto" id="bannerTitle">
+        Higgsy's U-Craft Item Emporium
+      </div>
+    </div>
+    <div class="row h-25">
+      <div class="offset-4 col-3" >
+        <p id="bannerTagline">"No refunds."</p>
+      </div>
+    </div>
+
+  </div>
+  <div class="container mt-4" id="itemWorkshop" >
+
+      <div class="container-fluid" id="workshopBanner">
+        Workshop
+      </div>
+      <div class="row pt-2 justify-content-end m-0" id="effectListing">
+      </div>
+
+
+
+
+
+      <div class="container-fluid">
+        Effect Type:&nbsp;&nbsp;
+        <select id="effectTypeInput" onchange="workshop.effectStatChange('effectType', event.target.value)">
+          <optgroup label="Equipment">
+            <option value="armor">Armor Bonus (enhancement)</option>
+            <option value="weapon">Weapon Bonus (enhancement)</option>
+          </optgroup>
+          <optgroup label="Magic">
+            <option value="spellSlot">Bonus Spell</option>
+            <option value="spellResist">Spell Resistance</option>
+            <option value="spellEffect">Spell Effect</option>
+          </optgroup>
+          <optgroup label="Body">
+            <option value="abilityScore">Ability Bonus (enhancement)</option>
+            <option value="AC">AC Bonus (deflection/other)</option>
+            <option value="natArmor">Natural Armor Bonus (Enhancement)</option>
+            <option value="saves">Save Bonuses (Resistance/Other)</option>
+            <option value="skills">Skill Bonuses (Competence)</option>
+          </optgroup>
+        </select>
+        <hr>
+      </div>
+
+      <div class="container-fluid">
+
+        <div class="row workshopHidable" id="effectSpecificQuestions">
+          <div class="col workshopHidable" id="bonusSize">
+            <label><span onclick="shopHints.showHint('bonusSize')" class="badge badge-warning">?</span>&nbsp;Bonus Size:&nbsp;&nbsp;<input onchange="workshop.effectStatChange('bonus', event.target.value)" type="number" id="bonusSizeInput"></label>
+          </div>
+          <div class="col workshopHidable" id="bonusSpell">
+            <label><span onclick="shopHints.showHint('bonusSpell')" class="badge badge-warning">?</span>&nbsp;Bonus Spell Level:&nbsp;&nbsp;<input onchange="workshop.effectStatChange('bonusSpell', event.target.value)" type="number" id="bonusSpellInput"></label>
+          </div>
+          <div class="col workshopHidable" id="spellResist">
+            <label><span onclick="shopHints.showHint('spellResist')" class="badge badge-warning">?</span>&nbsp;Spell Resistance:&nbsp;&nbsp;<input onchange="workshop.effectStatChange('bonus', event.target.value)" type="number" min="13" id="spellResistInput"></label>
+          </div>
+          <div class="col workshopHidable" id="spellEffect">
+            <label><span onclick="shopHints.showHint('generalSpell')" class="badge badge-warning">?</span>&nbsp;Spell Level:&nbsp;&nbsp;<input onchange="workshop.effectStatChange('spellLevel', event.target.value)"  type="number" min="0" id="spellLevelInput"></label>
+            <label>Caster Level:&nbsp;&nbsp;<input onchange="workshop.effectStatChange('casterLevel', event.target.value)"  type="number" min="1" id="casterLevelInput"></label>
+            <label>Material Component Cost:&nbsp;&nbsp;<input onchange="workshop.effectStatChange('materialComponent', event.target.value)"  type="number" id="materialComponentInput"></label><br>
+            <b><span onclick="shopHints.showHint('spellActivation')" class="badge badge-warning">?</span>&nbsp;Spell Activation:</b><br>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('activationType', event.target.value)" type="radio" name="activationMethod" value="singleSpellCompletion">Single use, spell completion</label>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('activationType', event.target.value)" type="radio" name="activationMethod" value="singleUseActivated">Single use, use-activated</label>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('activationType', event.target.value)" type="radio" name="activationMethod" value="spellTrigger">50 charges, spell trigger</label>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('activationType', event.target.value)" type="radio" name="activationMethod" value="commandWord">Command Word</label>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('activationType', event.target.value)" type="radio" name="activationMethod" value="useActivated">Use Activated</label>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('activationType', event.target.value)" type="radio" name="activationMethod" value="continuous">Continuous</label>
+          </div>
+          <div class="col-12 workshopHidable" id="spellDuration">
+            <b>What unit is the spell's duration measured in?:</b><br>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('spellDuration', event.target.value)" type="radio" name="spellDuration" value="rounds">Rounds</label>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('spellDuration', event.target.value)" type="radio" name="spellDuration" value="minutes">Minutes per level</label>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('spellDuration', event.target.value)" type="radio" name="spellDuration" value="tenMinutes">10 Minutes per level</label>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('spellDuration', event.target.value)" type="radio" name="spellDuration" value="days">24 hours+</label>
+            <br>
+            <hr>
+          </div>
+
+          <div class="col-12 workshopHidable" id="bonusType">
+            <b><span onclick="shopHints.showHint('bonusType')" class="badge badge-warning">?</span>&nbsp;Bonus Type:</b><br>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('bonusType', event.target.value)" type="radio" name="bonusType" value="deflection">Deflection</label>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('bonusType', event.target.value)" type="radio" name="bonusType" value="other">Other</label>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('bonusType', event.target.value)" type="radio" name="bonusType" value="enhancement">Enhancement</label>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('bonusType', event.target.value)" type="radio" name="bonusType" value="resistance">Resistance</label>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('bonusType', event.target.value)" type="radio" name="bonusType" value="competence">Competence</label>
+            <br>
+            <hr>
+          </div>
+
+
+
+        </div>
+        <div class="row workshopHidable" id="generalEffectQuestions">
+          <div class="col workshopHidable" id="itemCharges">
+            <b><span onclick="shopHints.showHint('useRestriction')" class="badge badge-warning">?</span>&nbsp;How often can this effect be used?</b><br>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('useRestriction', event.target.value)" type="radio" name="itemCharges" value="noLimit"checked>No use limit</label>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('useRestriction', event.target.value)" type="radio" name="itemCharges" value="charged">Charged [50]</label>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('useRestriction', event.target.value)" type="radio" name="itemCharges" value="charges">Charges Per Day</label><br>
+          </div>
+          <div class="col">
+            <b><span onclick="shopHints.showHint('addOn')" class="badge badge-warning">?</span>&nbsp;Is this effect an add-on?</b><br>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('addOn', event.target.value)" type="radio" name="itemAddOn" value="no">No</label>
+            <label class="radio-inline"><input onchange="workshop.effectStatChange('addOn', event.target.value)" type="radio" name="itemAddOn" value="yes">Yes</label>
+          </div>
+        </div>
+        <div class="col workshopHidable" id="chargesPerDay">
+          <label>Charges per Day:&nbsp;&nbsp;<input onchange="workshop.effectStatChange('chargesPerDay', event.target.value)" type="number" min="1" id="chargesPerDayInput"></label>
+        </div>
+        <hr>
+      </div>
+
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col">
+            <b>Item Name:</b><br>
+            <input onchange="workshop.itemStatChange('itemName', event.target.value)" type="text" id="itemNameInput"><br>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <b><span onclick="shopHints.showHint('itemSlot')" class="badge badge-warning">?</span>&nbsp;What slot is used for this item?</b><br>
+            <label class="radio-inline" style="min-width:100px"><input onchange="workshop.itemStatChange('slot', event.target.value)" type="radio" name="itemSlot" value="head">Head</label>
+            <label class="radio-inline" style="min-width:100px"><input onchange="workshop.itemStatChange('slot', event.target.value)" type="radio" name="itemSlot" value="headband">Headband</label>
+            <label class="radio-inline" style="min-width:100px"><input onchange="workshop.itemStatChange('slot', event.target.value)" type="radio" name="itemSlot" value="eyes">Eyes</label>
+            <label class="radio-inline" style="min-width:100px"><input onchange="workshop.itemStatChange('slot', event.target.value)" type="radio" name="itemSlot" value="shoulders">Shoulders</label><br>
+            <label class="radio-inline" style="min-width:100px"><input onchange="workshop.itemStatChange('slot', event.target.value)" type="radio" name="itemSlot" value="neck">Neck</label>
+            <label class="radio-inline" style="min-width:100px"><input onchange="workshop.itemStatChange('slot', event.target.value)" type="radio" name="itemSlot" value="chest">Chest</label>
+            <label class="radio-inline" style="min-width:100px"><input onchange="workshop.itemStatChange('slot', event.target.value)" type="radio" name="itemSlot" value="body">Body</label>
+            <label class="radio-inline" style="min-width:100px"><input onchange="workshop.itemStatChange('slot', event.target.value)" type="radio" name="itemSlot" value="belt">Belt</label><br>
+            <label class="radio-inline" style="min-width:100px"><input onchange="workshop.itemStatChange('slot', event.target.value)" type="radio" name="itemSlot" value="wrists">Wrists</label>
+            <label class="radio-inline" style="min-width:100px"><input onchange="workshop.itemStatChange('slot', event.target.value)" type="radio" name="itemSlot" value="hands">Hands</label>
+            <label class="radio-inline" style="min-width:100px"><input onchange="workshop.itemStatChange('slot', event.target.value)" type="radio" name="itemSlot" value="feet">Feet</label>
+            <label class="radio-inline" style="min-width:100px"><input onchange="workshop.itemStatChange('slot', event.target.value)" type="radio" name="itemSlot" value="ring">Ring</label><br>
+            <label class="radio-inline" style="min-width:100px"><input onchange="workshop.itemStatChange('slot', event.target.value)" type="radio" name="itemSlot" value="slotless">Slotless</label>
+            <label class="radio-inline" style="min-width:100px"><input onchange="workshop.itemStatChange('slot', event.target.value)" type="radio" name="itemSlot" value="gear">Item is: Armor/Weapon/Shield</label><br>
+            <label class="radio-inline" style="min-width:100px"><input onchange="workshop.itemStatChange('slot', event.target.value)" type="radio" name="itemSlot" value="consumable">Item is: Wand/Scroll/Potion</label><br>
+          </div>
+          <div class="col">
+            <b>Item Description:</b><br>
+            <!-- <textarea name="message" rows="10" cols="60">The cat was playing in the garden.</textarea> -->
+            <textarea id="itemDescriptionInput" onchange="workshop.itemStatChange('description', event.target.value)" class="form-control" rows="6"></textarea><br>
+          </div>
+        </div>
+        <div class="row">
+          <hr>
+          <div class="col">
+            <b><span onclick="shopHints.showHint('itemCasterLevel')" class="badge badge-warning">?</span>&nbsp;Item Caster Level:</b><br>
+            <input  onchange="workshop.itemStatChange('casterLevel', event.target.value)" type="number" id="itemLevelInput"><br>
+          </div>
+          <div class="col">
+            <b><span onclick="shopHints.showHint('costAdjust')" class="badge badge-warning">?</span>&nbsp;Final Cost Adjustment:</b><br>
+            <input onchange="workshop.itemStatChange('costAdjust', event.target.value)" type="number" id="costAdjustInput"><br>
+          </div>
+          <div class="col">
+            <b>Requirements:</b><br>
+            <input onchange="workshop.itemStatChange('constructionRequirements', event.target.value)" type="text" id="requirementInput"><br>
+          </div>
+          <div class="col">
+            <b><span onclick="shopHints.showHint('itemAura')" class="badge badge-warning">?</span>&nbsp;Aura:</b><br>
+            <input onchange="workshop.itemStatChange('aura', event.target.value)" type="text" id="auraInput"><br>
+          </div>
+          <div class="col">
+            <b>Weight:</b><br>
+            <input onchange="workshop.itemStatChange('weight', event.target.value)" type="text" id="weightInput"><br>
+          </div>
+        </div>
+        <hr>
+      </div>
+
+      <div class="container-fluid">
+
+        <div class="row">
+          <button class="col offset-1" onclick="workshop.craftItem()">Craft Item</button>
+          <button class="col offset-1" onclick="resetStorage()">Reset All</button>
+        </div>
+      </div>
+
+
+  </div>
+  <div class="container hidden mt-4" id="completedItems">
+    <div class="row">
+      <div class="col">
+        Generated Item (Text)
+        <hr>
+      </div>
+      <div class="col">
+        Generated Item (IMG)
+        <hr>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col container" id="finalItem">
+        <div class="row">
+          <p class="col-4"><b>Aura:</b>???</p>
+          <p class="col"><b>CL:</b> #th</p>
+        </div>
+        <div class="row">
+          <p class="col-4"><b>Slot:</b> ????;</p>
+          <p class="col"><b>Price:</b> XXX gp;</p>
+          <p class="col"><b>Wgt:</b> XX lbs</p>
+        </div>
+        <hr>
+        <div class="row">
+          <p class="col"><b>Description</b><br>
+           XXX</p>
+        </div>
+        <div class="row">
+          <p class="col"><b>Construction Requirements:</b> XX<br>
+          <b>Construction Cost:</b> XX gp</p>
+        </div>
+      </div>
+      <div class="col" id="finalItemCard">
+        <canvas id="itemCardCanvas" width="350" height="516" >Sorry, your browser doesn't support the &lt;canvas&gt; element.</canvas>
+      </div>
+    </div>
+      <div class="row">
+        <div class="col">
+          :/
+        </div>
+        <div class="col">
+          <b>ItemName (card):</b><br>
+          <input type="text" onchange="workshop.itemStatChange('shortName', event.target.value)" id="shortNameInput"><br>
+          <table>
+            <tr>
+              <td><b>Font-size:</b><br>
+              <input onchange="workshop.itemStatChange('nameFontNum', event.target.value)" type="number" id="nameFontNumInput"><br></td>
+              <td><b>Font-family:</b><br>
+                <select class="fontSelector" id="nameFontFamInput" onchange="workshop.itemStatChange('nameFontFam', event.target.value)">
+                  <optgroup label="Equipment">
+                    <option value="armor">Armor Bonus (enhancement)</option>
+                    <option value="weapon">Weapon Bonus (enhancement)</option>
+                  </optgroup>
+                  <optgroup label="Magic">
+                    <option value="spellSlot">Bonus Spell</option>
+                    <option value="spellResist">Spell Resistance</option>
+                    <option value="spellEffect">Spell Effect</option>
+                  </optgroup>
+                  <optgroup label="Body">
+                    <option value="abilityScore">Ability Bonus (enhancement)</option>
+                    <option value="AC">AC Bonus (deflection/other)</option>
+                    <option value="natArmor">Natural Armor Bonus (Enhancement)</option>
+                    <option value="saves">Save Bonuses (Resistance/Other)</option>
+                    <option value="skills">Skill Bonuses (Competence)</option>
+                  </optgroup>
+                </select>
+            </tr>
+            <tr>
+              <td><b>Custom X-Pos:</b><br>
+              <input onchange="workshop.itemStatChange('nameX', event.target.value)" type="number" id="nameXInput"><br></td>
+              <td><b>Custom Y-Pos:</b><br>
+              <input onchange="workshop.itemStatChange('nameY', event.target.value)" type="number" id="nameYInput"><br></td>
+            </tr>
+          </table>
+          <hr>
+          <b>ItemImage (URL):</b><br>
+          <input type="text" onchange="workshop.itemStatChange('image', event.target.value)" id="imageInput"><br>
+          <hr>
+          <b>Item Title (card):</b><br>
+          <input type="text" onchange="workshop.itemStatChange('shortTitle', event.target.value)" id="shortTitleInput"><br>
+          <table>
+            <tr>
+              <td><b>Font-size:</b><br>
+              <input onchange="workshop.itemStatChange('titleFontNum', event.target.value)" type="number" id="titleFontNumInput"><br></td>
+              <td><b>Font-family:</b><br>
+                <select class="fontSelector" id="titleFontFamInput" onchange="workshop.itemStatChange('titleFontFam', event.target.value)">
+                  <optgroup label="Equipment">
+                    <option value="armor">Armor Bonus (enhancement)</option>
+                    <option value="weapon">Weapon Bonus (enhancement)</option>
+                  </optgroup>
+                  <optgroup label="Magic">
+                    <option value="spellSlot">Bonus Spell</option>
+                    <option value="spellResist">Spell Resistance</option>
+                    <option value="spellEffect">Spell Effect</option>
+                  </optgroup>
+                  <optgroup label="Body">
+                    <option value="abilityScore">Ability Bonus (enhancement)</option>
+                    <option value="AC">AC Bonus (deflection/other)</option>
+                    <option value="natArmor">Natural Armor Bonus (Enhancement)</option>
+                    <option value="saves">Save Bonuses (Resistance/Other)</option>
+                    <option value="skills">Skill Bonuses (Competence)</option>
+                  </optgroup>
+                </select>
+            </tr>
+            <tr>
+              <td><b>Custom X-Pos:</b><br>
+              <input onchange="workshop.itemStatChange('titleX', event.target.value)" type="number" id="titleXInput"><br></td>
+              <td><b>Custom Y-Pos:</b><br>
+              <input onchange="workshop.itemStatChange('titleY', event.target.value)" type="number" id="titleYInput"><br></td>
+            </tr>
+          </table>
+          <hr>
+          <b>Item Description (card):</b><br>
+          <textarea style="white-space: pre-wrap;" onchange="workshop.itemStatChange('shortDescription', event.target.value)" class="form-control" rows="6" id="shortDescriptionInput"></textarea><br>
+          <table>
+            <tr>
+              <td><b>Font-size:</b><br>
+              <input onchange="workshop.itemStatChange('descriptionFontNum', event.target.value)" type="number" id="descriptionFontNumInput"><br></td>
+              <td><b>Font-family:</b><br>
+                <select class="fontSelector" id="descriptionFontFamInput" onchange="workshop.itemStatChange('descriptionFontFam', event.target.value)">
+                  <optgroup label="Equipment">
+                    <option value="armor">Armor Bonus (enhancement)</option>
+                    <option value="weapon">Weapon Bonus (enhancement)</option>
+                  </optgroup>
+                  <optgroup label="Magic">
+                    <option value="spellSlot">Bonus Spell</option>
+                    <option value="spellResist">Spell Resistance</option>
+                    <option value="spellEffect">Spell Effect</option>
+                  </optgroup>
+                  <optgroup label="Body">
+                    <option value="abilityScore">Ability Bonus (enhancement)</option>
+                    <option value="AC">AC Bonus (deflection/other)</option>
+                    <option value="natArmor">Natural Armor Bonus (Enhancement)</option>
+                    <option value="saves">Save Bonuses (Resistance/Other)</option>
+                    <option value="skills">Skill Bonuses (Competence)</option>
+                  </optgroup>
+                </select>
+            </tr>
+            <tr>
+              <td><b>Custom X-Pos:</b><br>
+              <input onchange="workshop.itemStatChange('descriptionX', event.target.value)" type="number" id="descriptionXInput"><br></td>
+              <td><b>Custom Y-Pos:</b><br>
+              <input onchange="workshop.itemStatChange('descriptionY', event.target.value)" type="number" id="descriptionYInput"><br></td>
+            </tr>
+          </table>
+          <hr>
+          <button onclick="cardMaker.createCard()">Re-load Card</button>
+        </div>
+
+      </div>
+  </div>
+
+
+  <div class="container" id="flavorText">
+    <div class="row" id="higgsyMessage">
+      <div class="col">
+        <hr>
+        &nbsp;&nbsp;"Welcome to Higgsy's U-Craft!  Up above is the workshop where you can put together an item from a listed number of effect types.  If you want to add a new effect to your item just tug on the ribbon with the [+] and we'll be right with you.  Click the [?] boxes if you get confused about anything in particular.<br><br>&nbsp;&nbsp;Once you're done just bring everything up to the counter and click 'craft item' and we'll give you your total along with a chance to review the details of your item.  We also offer help customizing advertisement cards for your items as a special bonus, which you'll see once you're ready to craft.  We don't have a comment-box but if there's anything we can do to improve your experience feel free to leave a message with <a href="https://www.reddit.com/user/PrinnyBaal">my assistant.</a>"<br>
+        &nbsp;&nbsp;-Higgsy
+        <hr>
+      </div>
+    </div>
+    <div class="row mt-4"  id="testimonials">
+      <div class="col">
+        &nbsp;&nbsp;"Krug No Like Maths, But Krug Want Be Artist of Battlefield.  Now Thanks To U-Craft Krug Have Weapon That Fit His Creative Soul And Nice Lady Help With Fair Market Price Maths.  Krug Still Not Pay, But Krug Believe In Principle of Thing."<br>
+        &nbsp;&nbsp;-X
+      </div>
+      <div class="col">
+        &nbsp;&nbsp;"To be honest, I usually prefer just buying my magic items off the shelves.  But when I got Craft Wondrous as a story feat I felt like I couldn't leave it to waste.  Buying a Do-it-yourself kit from U-Craft helped a lot with getting the raw materials but the actual crafting instructions that came with the kit were a little opaque.  3/5 stars."<br>
+        &nbsp;&nbsp;-Hedge Wizard Ptolemy
+      </div>
+    </div>
+  </div>
+  <div id="footer" class="container-fluid">
+
+      <div class="row h-100 pb-4">
+        <div class="col" >
+          <br>
+          <p><b>Steven Sonson</b></p>
+          <hr>
+          <p><emsp>ssonson@alumni.nd.edu</p>
+          <p><emsp>Bridgport, Connecticut</p>
+          <hr>
+          <p><b>Other Higgsy DnD Tools</b></p>
+          <a href="https://prinnybaal.github.io/Higgsy-sModularSheet/">Higgsy's Modular Character Sheet[Beta]</a>
+        </div>
+        <div class="col" >
+          <br>
+          <p><b>Credits</b></p>
+          <hr>
+
+          <p><emsp>Higgsy, originally sprite by: <a href="https://lemmasoft.renai.us/forums/viewtopic.php?f=52&t=48688&p=501514&hilit=female#p501514">GrammaHobbes</a></p>
+          <p><emsp>Background Card Template: <a href="https://www.reddit.com/r/DnD/comments/7c9hge/oc_really_proud_of_my_item_cards_bonus_template/">u/Bernalestomas</a></p>
+          <p><emsp>Site Background: <a href="https://www.toptal.com/designers/subtlepatterns/ep-natural-white/">EP Natural White from Toptal Subtle Patterns</a></p>
+          <a href="https://icons8.com/icon/16672/sword">Sword icon by Icons8</a>
+          <p>"This website uses trademarks and/or copyrights owned by Paizo Inc., which are used under Paizo's Community Use Policy. We are expressly prohibited from charging you to use or access this content. This website is not published, endorsed, or specifically approved by Paizo Inc. For more information about Paizo's Community Use Policy, please visit paizo.com/communityuse. For more information about Paizo Inc. and Paizo products, please visit paizo.com."</p>
+
+
+        </div>
+      </div>
+  </div>
+  <div id="hintBox" class="hidden">
+    <div onclick="shopHints.hideHint()" id="hintHide"></div>
+    <div id="hintContent" class="px-2">
+    </div>
+  </div>
+
+</body>

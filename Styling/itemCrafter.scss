@@ -1,0 +1,176 @@
+$deepPurple: #292531;
+$deepBlue:#445D7D;
+$softBlue:#7F95AD;
+$softOrange:#C1A782;
+$deepOrange:#C7814A;
+
+$storeFont:"Monotype Corsiva";
+$talkFont:"Lucida Handwriting";
+$baseFont:"Verdana";
+
+body{
+  background-image:url("https://res.cloudinary.com/metaverse/image/upload/v1533578215/Backgrounds/ep_naturalwhite.png");
+  font-family:$baseFont;
+}
+
+.badge{
+  line-height:.6;
+  padding: .20em .2em;
+  border:2px solid black;
+
+}
+.badge:hover{
+  cursor:pointer;
+  border-color:white;
+  color:white;
+}
+
+.hidden{
+  display:none;
+}
+
+#shopBanner{
+  height:15vh;
+  background-color:$deepBlue;
+  #bannerImage{
+    background-image:url("https://res.cloudinary.com/metaverse/image/upload/v1541010546/Avatars/Higgsy/side_higgsLaugh.png");
+    background-size:100%  100%;
+    background-repeat:no-repeat;
+    border-radius:50%;
+    border:2px groove $deepPurple;
+
+  }
+  #bannerTitle{
+  font-size:3.5em;
+  overflow:hidden;
+  font-family:$storeFont;
+  }
+  #bannerTagline{
+    font-family:$talkFont;
+  }
+}
+
+#flavorText{
+
+
+  #testimonials{
+    font-family:$talkFont;
+
+  }
+
+  #higgsyMessage{
+
+  }
+}
+
+
+#hintBox{
+  border-radius:2%;
+  border:2px solid black;
+  background-color:grey;
+  overflow:auto;
+  width:350px;
+  height:500px;
+  position:fixed;
+  top:5px;
+  right:5px;
+
+
+  #hintHide{
+    position:absolute;
+    top:0;
+    right:0;
+    height:20px;
+    width:20px;
+    background-image:url("https://res.cloudinary.com/metaverse/image/upload/v1548289539/icons8-delete-48.png");
+    background-size:contain;
+    background-color:black;
+    border:2px dashed white;
+  }
+  #hintHide:hover{
+    cursor:pointer;
+    border:2px solid black;
+  }
+  #hintTitle{
+    font-size:2em;
+    font-weight:bold;
+  }
+}
+
+#itemWorkshop{
+  padding:0;
+  border:2px inset $deepOrange;
+  background-color:$softBlue;
+  #workshopBanner{
+    font-family:$storeFont;
+    font-size:2em;
+    background-color:$deepPurple;
+    color:$softOrange;
+
+  }
+  #effectListing{
+    border-bottom:5px groove black;
+    .ribbonWrapper{
+      position:relative;
+      width:25px;
+      height:30px;
+      .masterRibbon{
+        height:30px;
+        color:white;
+        width:25px;
+        padding-top:5px;
+        background-color:$deepOrange;
+        border-radius:5%;
+        text-align:center;
+        -webkit-clip-path: polygon(50% 23%, 100% 0, 100% 100%, 0 100%, 0 0);
+        clip-path: polygon(50% 23%, 100% 0, 100% 100%, 0 100%, 0 0);
+        transition:height .5s;
+      }
+      .masterRibbon:hover{
+        cursor:pointer;
+      }
+      .effectRibbon{
+         height:10px;
+         color:white;
+         width:25px;
+         padding-top:5px;
+         background-color:$deepBlue;
+         border-radius:5%;
+         text-align:center;
+         -webkit-clip-path: polygon(50% 23%, 100% 0, 100% 100%, 0 100%, 0 0);
+         clip-path: polygon(50% 23%, 100% 0, 100% 100%, 0 100%, 0 0);
+         transition:height .5s;
+         position:absolute;
+         bottom:0;
+
+      }
+      .effectRibbon:hover{
+        height:20px;
+
+        cursor:pointer;
+      }
+      .activeRibbon{
+        height:30px !important;
+
+      }
+    }
+
+  }
+}
+
+#completedItems{
+
+  #finalItem{
+    border:2px solid $deepPurple;
+    overflow:auto;
+
+  }
+  #finalItemCard{
+
+  }
+}
+
+#footer{
+  background-color:$deepPurple;
+  color:$softOrange;
+}
