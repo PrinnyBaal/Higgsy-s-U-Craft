@@ -373,6 +373,7 @@ setFontOptions:function(){
 
 let magicMath={
   getEffectCost:function(effect){
+    effect=magicMath.prepareEffectNumbers(effect);
     let price=0;
     let spellLevel;
     if (effect.spellLevel<1){
@@ -520,13 +521,23 @@ let magicMath={
     //searches every saved effect and updates both cost and construction cost of this object
     let totalPrice=0;
     //should throw a fit if an effect doesn't have all needed information
-    item.effects.forEach(function(effect){totalPrice+=magicMath.getEffectCost(effect)});
+    item.effects.forEach(function(effect){totalPrice+=Number(magicMath.getEffectCost(effect))});
     if (item.slot=="slotless"){
       totalPrice*=2;
     }
-    totalPrice+=item.costAdjust;
+    Number(totalPrice)+=Number(item.costAdjust);
     return totalPrice;
+  },
+  prepareEffectNumbers:function(effect){
+    effect.bonus=Number(effect.bonus);
+    effect.bonusSpell=Number(effect.bonusSpell);
+    effect.bonusLevel=Number(effect.bonusLevel);
+    effect.casterLevel=Number(effect.casterLevel);
+    effect.materialComponent=Number(effect.materialComponent);
+    effect.chargesPerDay=Number(effect.chargesPerDay);
+    return effect;
   }
+
 }
 
 let data={
