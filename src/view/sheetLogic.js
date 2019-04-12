@@ -525,7 +525,7 @@ let magicMath={
     if (item.slot=="slotless"){
       totalPrice*=2;
     }
-    Number(totalPrice)+=Number(item.costAdjust);
+    totalPrice+=Number(item.costAdjust);
     return totalPrice;
   },
   prepareEffectNumbers:function(effect){
